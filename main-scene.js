@@ -20,15 +20,21 @@ class Solar_System extends Scene
                                                         // Don't define blueprints for shapes in display() every frame.
 
                                                 // TODO (#1):  Complete this list with any additional shapes you need.
+      const Subdivision_Sphere_Flat = Subdivision_Sphere.prototype.make_flat_shaded_version();
       this.shapes = { 'box' : new Cube(),
-                   'ball_4' : new Subdivision_Sphere( 4 ),
+                   'ball_1' : new Subdivision_Sphere(1),
+                   'ball_2' : new Subdivision_Sphere(2),
+                   'ball_3' : new Subdivision_Sphere_Flat(3),
+                   'ball_4' : new Subdivision_Sphere(4),
+                   'ball_5' : new Subdivision_Sphere(5),
+                   'ball_6' : new Subdivision_Sphere(6),
                      'star' : new Planar_Star() };
 
                                                         // TODO (#1d): Modify one sphere shape's existing texture 
                                                         // coordinates in place.  Multiply them all by 5.
-      // this.shapes.ball_repeat.arrays.texture_coord.forEach( coord => coord
-      
-                                                              // *** Shaders ***
+     // this.shapes.ball_repeat.arrays.texture_coord.forEach( coord => coord);
+       //this.shapes.ball_5_repeat.arrays.texture_coord.forEach(coord => coord);
+      //wot in syntactintion                                                        // *** Shaders ***
 
                                                               // NOTE: The 2 in each shader argument refers to the max
                                                               // number of lights, which must be known at compile time.
@@ -61,7 +67,10 @@ class Solar_System extends Scene
                                     { texture: new Texture( "assets/earth.gif" ),
                                       ambient: 0, diffusivity: 1, specularity: 1, color: Color.of( .4,.4,.4,1 ) } ),
                       black_hole: new Material( black_hole_shader ),
-                             sun: new Material( sun_shader, { ambient: 1, color: Color.of( 0,0,0,1 ) } )
+                             sun_mat: new Material( phong_shader,
+                                    { ambient: 1, diffusivity: 1, specularity: 1, color: Color.of( 0,0,0,1 ) } ),
+                             rock: new Material( phong_shader,
+                                    { ambient: 0, diffusivity: .5, specularity: .5, color: Color.of( .2,.2,.2,1 ) } ),
                        };
 
                                   // Some setup code that tracks whether the "lights are on" (the stars), and also
@@ -141,10 +150,11 @@ class Solar_System extends Scene
                                                   // increases, and bluer as it decreases.
       const smoothly_varying_ratio = .5 + .5 * Math.sin( 2 * Math.PI * t/10 ),
             sun_size = 1 + 2 * smoothly_varying_ratio,
-                 sun = undefined,
-           sun_color = undefined;
+                 sun = Mat4.scale([sun_size,sun_size,sun_size]),
+           sun_color = Color.of(smoothly_varying_ratio,smoothly_varying_ratio,Math.abs(1-smoothly_varying_ratio),1);
+           //console.log(color_variance);
 
-      this.materials.sun.color = sun_color;     // Assign our current sun color to the existing sun material.          
+      this.materials.sun_mat.color = sun_color;     // Assign our current sun color to the existing sun material.          
 
                                                 // *** Lights: *** Values of vector or point lights.  They'll be consulted by 
                                                 // the shader when coloring shapes.  See Light's class definition for inputs.
@@ -152,7 +162,7 @@ class Solar_System extends Scene
                                                 // TODO (#3c):  Replace with a point light located at the origin, with the sun's color
                                                 // (created above).  For the third argument pass in the point light's size.  Use
                                                 // 10 to the power of sun_size.
-      program_state.lights = [ new Light( Vec.of( 0,0,0,1 ), Color.of( 1,1,1,1 ), 100000 ) ];
+      program_state.lights = [ new Light( Vec.of( 0,0,0,1 ), sun_color, Math.pow(sun_size) ) ];
 
                             // TODO (#5c):  Throughout your program whenever you use a material (by passing it into draw),
                             // pass in a modified version instead.  Call .override( modifier ) on the material to
@@ -189,25 +199,34 @@ class Solar_System extends Scene
 
       // ***** BEGIN TEST SCENE *****               
                                           // TODO:  Delete (or comment out) the rest of display(), starting here:
-
-      program_state.set_camera( Mat4.translation([ 0,3,-10 ]) );
+      var camera_location = Mat4.translation([0,3,-20]);
+      camera_location = camera_location.post_multiply(Mat4.rotation(.5, [1,0,0]));
+      program_state.set_camera(camera_location);
       const angle = Math.sin( t );
       const light_position = Mat4.rotation( angle, [ 1,0,0 ] ).times( Vec.of( 0,-1,1,0 ) );
-      program_state.lights = [ new Light( light_position, Color.of( 1,1,1,1 ), 1000000 ) ];
+      program_state.lights = [ new Light( light_position, Color.of( 1,1,1,1 ), 1**sun_size ) ];
       model_transform = Mat4.identity();
-      this.shapes.box.draw( context, program_state, model_transform, this.materials.plastic.override( yellow ) );
+      //this.shapes.box.draw( context, program_state, model_transform, this.materials.plastic.override( yellow ) );
       model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
-      this.shapes.ball_4.draw( context, program_state, model_transform, this.materials.metal_earth.override( blue ) );
-      model_transform.post_multiply( Mat4.rotation( t, Vec.of( 0,1,0 ) ) )
-      model_transform.post_multiply( Mat4.rotation( 1, Vec.of( 0,0,1 ) )
-                             .times( Mat4.scale      ([ 1,   2, 1 ]) )
-                             .times( Mat4.translation([ 0,-1.5, 0 ]) ) );
-      this.shapes.box.draw( context, program_state, model_transform, this.materials.plastic_stars.override( yellow ) );
-
+      const origin_system = model_transform.copy();
+      //this.shapes.ball_4.draw( context, program_state, model_transform, this.materials.metal_earth.override( blue ) );
+      //SUN!
+      model_transform = model_transform.post_multiply(sun);
+      this.shapes.ball_6.draw(context,program_state,model_transform,this.materials.sun_mat);
+      //first planet
+      model_transform = origin_system.copy();
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/1.2, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([5,0,0]));
+      this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.rock);
+      //model_transform.post_multiply( Mat4.rotation( t, Vec.of( 0,1,0 ) ) )
+     // model_transform.post_multiply( Mat4.rotation( 1, Vec.of( 0,0,1 ) )
+       //                      .times( Mat4.scale      ([ 1,   2, 1 ]) )
+         //                    .times( Mat4.translation([ 0,-1.5, 0 ]) ) );
+      //this.shapes.box.draw( context, program_state, model_transform, this.materials.plastic_stars.override( yellow ) );
       // ***** END TEST SCENE *****
 
       // Warning: Get rid of the test scene, or else the camera position and movement will not work.
-
+     // this.shapes.star.draw(context, program_state, model_transform, this.materials.sun_color);
 
 
     }
