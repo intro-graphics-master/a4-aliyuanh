@@ -76,10 +76,10 @@ class Solar_System extends Scene
                    earth: new Material( texture_shader_2,    
                                     { texture: new Texture( "assets/earth.gif" ),
                                       ambient: 0, diffusivity: 1, specularity: .4, color: Color.of( .4,.4,.4,1 ) } ),
-                          brickBoi: new Material(texture_shader_2, {texture: new Texture("assets/bricks.png", "NEAREST"), diffusivity:1,
+                          brickBoi: new Material(texture_shader, {texture: new Texture( "assets/bricks.png", "NEAREST" ), diffusivity:1,
                           specularity:1, smoothness: 10}),
                           brickBoiBetter: new Material(texture_shader_2, {texture: new Texture("assets/bricks.png"), diffusivity:1,
-                          specularity:1, smoothness: 10}),
+                          specularity:1}),
                           starBoi: new Material(texture_shader_2, {texture: new Texture("assets/star_face.png"), ambient: 1, 
                             diffusivity:1,
                            specularity:1, color: Color.of(1,1,1,1)}),
@@ -265,17 +265,18 @@ class Solar_System extends Scene
       model_transform = model_transform.post_multiply(Mat4.translation([8,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.m2);
-      //moon 2
-      model_transform = model_transform.post_multiply(Mat4.rotation(t/3.5, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([1.5,0,0]));
-      model_transform = model_transform.post_multiply(Mat4.scale([.5,.5,.5]));
-      this.shapes.ball_1.draw(context,program_state,model_transform,this.materials.moonBoi);
+     
       //third planet -- earth! 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/2, [0,1,0]));
       model_transform = model_transform.post_multiply(Mat4.translation([11,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_4.draw(context,program_state,model_transform,this.materials.earth);
+      //moon 2!!!!!!!!
+       model_transform = model_transform.post_multiply(Mat4.rotation(t/3.5, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([1.5,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.scale([.5,.5,.5]));
+      this.shapes.ball_1.draw(context,program_state,model_transform,this.materials.moonBoi);
       //fourth planet - bad brick 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
