@@ -33,8 +33,8 @@ class Solar_System extends Scene
                                                         // TODO (#1d): Modify one sphere shape's existing texture 
                                                         // coordinates in place.  Multiply them all by 5.
      // this.shapes.ball_repeat.arrays.texture_coord.forEach( coord => coord);
-       //this.shapes.ball_5_repeat.arrays.texture_coord.forEach(coord => coord);
-      //wot in syntactintion                                                        // *** Shaders ***
+       this.shapes.ball_5.arrays.texture_coord.forEach(()=>{this.coord = 5*this.coord});
+                                                      // *** Shaders ***
 
                                                               // NOTE: The 2 in each shader argument refers to the max
                                                               // number of lights, which must be known at compile time.
@@ -70,7 +70,13 @@ class Solar_System extends Scene
                              sun_mat: new Material( phong_shader,
                                     { ambient: 1, diffusivity: 1, specularity: 1, color: Color.of( 0,0,0,1 ) } ),
                              rock: new Material( phong_shader,
+                                    { ambient: 0, diffusivity: .5, specularity: .5, color: Color.of( .3,.3,.3,1 ) } ),
+                             m2: new Material( phong_shader,
                                     { ambient: 0, diffusivity: .5, specularity: .5, color: Color.of( .2,.2,.2,1 ) } ),
+                   earth: new Material( texture_shader_2,    
+                                    { texture: new Texture( "assets/earth.gif" ),
+                                      ambient: 0, diffusivity: 1, specularity: .4, color: Color.of( .4,.4,.4,1 ) } ),
+
                        };
 
                                   // Some setup code that tracks whether the "lights are on" (the stars), and also
@@ -217,7 +223,21 @@ class Solar_System extends Scene
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.2, [0,1,0]));
       model_transform = model_transform.post_multiply(Mat4.translation([5,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.rock);
+
+      model_transform = origin_system.copy();
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/1.6, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([8,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
+      this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.m2);
+
+      model_transform = origin_system.copy();
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/2, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([11,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
+      this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.earth);
+
       //model_transform.post_multiply( Mat4.rotation( t, Vec.of( 0,1,0 ) ) )
      // model_transform.post_multiply( Mat4.rotation( 1, Vec.of( 0,0,1 ) )
        //                      .times( Mat4.scale      ([ 1,   2, 1 ]) )
