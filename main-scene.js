@@ -76,6 +76,12 @@ class Solar_System extends Scene
                    earth: new Material( texture_shader_2,    
                                     { texture: new Texture( "assets/earth.gif" ),
                                       ambient: 0, diffusivity: 1, specularity: .4, color: Color.of( .4,.4,.4,1 ) } ),
+                          brickBoi: new Material(texture_shader_2, {texture: new Texture("assets/bricks.png", "NEAREST"), diffusivity:1,
+                          specularity:1, smoothness: 10}),
+                          brickBoiBetter: new Material(texture_shader_2, {texture: new Texture("assets/bricks.png"), diffusivity:1,
+                          specularity:1, smoothness: 10}),
+                          starBoi: new Material(texture_shader_2, {texture: new Texture("assets/star_face.png"), ambient: 1, diffusivity:0
+                          , specularity:0, color: Color.of(1,1,1,1)}),
 
                        };
 
@@ -205,12 +211,13 @@ class Solar_System extends Scene
 
       // ***** BEGIN TEST SCENE *****               
                                           // TODO:  Delete (or comment out) the rest of display(), starting here:
-      var camera_location = Mat4.translation([0,3,-20]);
+      var camera_location = Mat4.translation([0,3,-40]);
       camera_location = camera_location.post_multiply(Mat4.rotation(.5, [1,0,0]));
       program_state.set_camera(camera_location);
       const angle = Math.sin( t );
       const light_position = Mat4.rotation( angle, [ 1,0,0 ] ).times( Vec.of( 0,-1,1,0 ) );
-      program_state.lights = [ new Light( light_position, Color.of( 1,1,1,1 ), 1**sun_size ) ];
+      //TODO: change back lights 
+      program_state.lights = [ new Light( light_position, Color.of( 1,1,1,1 ), 10000000**sun_size ) ];
       model_transform = Mat4.identity();
       //this.shapes.box.draw( context, program_state, model_transform, this.materials.plastic.override( yellow ) );
       model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
@@ -225,24 +232,37 @@ class Solar_System extends Scene
       model_transform = model_transform.post_multiply(Mat4.translation([5,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.rock);
-
+      //second planet - shiny mirror 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.6, [0,1,0]));
       model_transform = model_transform.post_multiply(Mat4.translation([8,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.m2);
-
+      //third planet -- earth! 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/2, [0,1,0]));
       model_transform = model_transform.post_multiply(Mat4.translation([11,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
-      this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.earth);
+      this.shapes.ball_4.draw(context,program_state,model_transform,this.materials.earth);
+      //fourth planet - bad brick 
+      model_transform = origin_system.copy();
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([14,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
+      this.shapes.ball_5.draw(context,program_state,model_transform,this.materials.brickBoi);
+      //fifth planet - good brick :) 
+      model_transform = origin_system.copy();
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/4, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([17,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
+      this.shapes.ball_5.draw(context,program_state,model_transform,this.materials.brickBoiBetter);
 
-      //model_transform.post_multiply( Mat4.rotation( t, Vec.of( 0,1,0 ) ) )
-     // model_transform.post_multiply( Mat4.rotation( 1, Vec.of( 0,0,1 ) )
-       //                      .times( Mat4.scale      ([ 1,   2, 1 ]) )
-         //                    .times( Mat4.translation([ 0,-1.5, 0 ]) ) );
-      //this.shapes.box.draw( context, program_state, model_transform, this.materials.plastic_stars.override( yellow ) );
+      for(let i = 0; i < this.star_matrices.length; i++){
+        model_transform = this.star_matrices[i].copy();
+        this.shapes.star.draw(context,program_state,model_transform,this.materials.starBoi);
+
+      }
+      
       // ***** END TEST SCENE *****
 
       // Warning: Get rid of the test scene, or else the camera position and movement will not work.
@@ -318,7 +338,8 @@ class Planar_Star extends Shape
       this.arrays.normal        = this.arrays.position.map( p => Vec.of( 0,0,-1 ) );
 
                                       // TODO (#5a):  Fill in some reasonable texture coordinates for the star:
-      // this.arrays.texture_coord = this.arrays.position.map( p => 
+       //star shit???? texture??? MAPPING OF STAR TEXTURES
+       this.arrays.texture_coord = this.arrays.position.map( p => [Vec.of(0,0),Vec.of(0,1),Vec.of(1,0),Vec.of(1,1)]);
     }
 }
 
