@@ -80,8 +80,10 @@ class Solar_System extends Scene
                           specularity:1, smoothness: 10}),
                           brickBoiBetter: new Material(texture_shader_2, {texture: new Texture("assets/bricks.png"), diffusivity:1,
                           specularity:1, smoothness: 10}),
-                          starBoi: new Material(texture_shader_2, {texture: new Texture("assets/star_face.png"), ambient: 1, diffusivity:0
-                          , specularity:0, color: Color.of(1,1,1,1)}),
+                          starBoi: new Material(texture_shader_2, {texture: new Texture("assets/star_face.png"), ambient: 1, 
+                            diffusivity:1,
+                           specularity:1, color: Color.of(1,1,1,1)}),
+                           moonBoi : new Material(phong_shader, {ambient:0,diffusivity:.8, specularity:.5, smoothness:10, color: Color.of(1,1,1,1)}),
 
                        };
 
@@ -99,7 +101,10 @@ class Solar_System extends Scene
                                       // buttons with key bindings for affecting this scene, and live info readouts.
 
                                  // TODO (#5b): Add a button control.  Provide a callback that flips the boolean value of "this.lights_on".
-       // this.key_triggered_button( 
+       this.key_triggered_button("Lights on/off", ['l'], ()=>{
+         console.log("pressed!");
+         this.lights_on = !this.lights_on;
+          } );
     }
   display( context, program_state )
     {                                                // display():  Called once per frame of animation.  For each shape that you want to
@@ -174,7 +179,7 @@ class Solar_System extends Scene
                                                 // TODO (#3c):  Replace with a point light located at the origin, with the sun's color
                                                 // (created above).  For the third argument pass in the point light's size.  Use
                                                 // 10 to the power of sun_size.
-      program_state.lights = [ new Light( Vec.of( 0,0,0,1 ), sun_color, Math.pow(sun_size) ) ];
+      program_state.lights = [ new Light( Vec.of( 0,0,0,1 ), sun_color, 10**(sun_size)) ];
 
                             // TODO (#5c):  Throughout your program whenever you use a material (by passing it into draw),
                             // pass in a modified version instead.  Call .override( modifier ) on the material to
@@ -211,13 +216,12 @@ class Solar_System extends Scene
 
       // ***** BEGIN TEST SCENE *****               
                                           // TODO:  Delete (or comment out) the rest of display(), starting here:
-      var camera_location = Mat4.translation([0,3,-40]);
+      var camera_location = Mat4.translation([0,3,-30]);
       camera_location = camera_location.post_multiply(Mat4.rotation(.5, [1,0,0]));
       program_state.set_camera(camera_location);
       const angle = Math.sin( t );
       const light_position = Mat4.rotation( angle, [ 1,0,0 ] ).times( Vec.of( 0,-1,1,0 ) );
       //TODO: change back lights 
-      program_state.lights = [ new Light( light_position, Color.of( 1,1,1,1 ), 10000000**sun_size ) ];
       model_transform = Mat4.identity();
       //this.shapes.box.draw( context, program_state, model_transform, this.materials.plastic.override( yellow ) );
       model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
@@ -227,17 +231,45 @@ class Solar_System extends Scene
       model_transform = model_transform.post_multiply(sun);
       this.shapes.ball_6.draw(context,program_state,model_transform,this.materials.sun_mat);
       //first planet
+      if(this.lights_on){
+       this.materials.rock =  this.materials.rock.override({ambient:.5});
+       this.materials.m2 =  this.materials.m2.override({ambient:.5});
+       this.materials.earth =  this.materials.earth.override({ambient:.5});
+       this.materials.brickBoi =  this.materials.brickBoi.override({ambient:.5});
+       this.materials.brickBoiBetter =  this.materials.brickBoiBetter.override({ambient:.5});
+       this.materials.moonBoi =  this.materials.moonBoi.override({ambient:.5});
+       for(let i = 0; i < this.star_matrices.length; i++){
+              model_transform = this.star_matrices[i].copy();
+              this.shapes.star.draw(context,program_state,model_transform,this.materials.sun_mat);
+
+            }
+      }else{
+           this.materials.rock =  this.materials.rock.override({ambient:.0});
+           this.materials.m2 =  this.materials.m2.override({ambient:.0});
+           this.materials.earth =  this.materials.earth.override({ambient:.0});
+           this.materials.brickBoi =  this.materials.brickBoi.override({ambient:.0});
+           this.materials.brickBoiBetter =  this.materials.brickBoiBetter.override({ambient:.0});
+           this.materials.moonBoi =  this.materials.moonBoi.override({ambient:.0});
+
+      }
+      //planet 1!!!!!!!
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.2, [0,1,0]));
       model_transform = model_transform.post_multiply(Mat4.translation([5,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.rock);
+
       //second planet - shiny mirror 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.6, [0,1,0]));
       model_transform = model_transform.post_multiply(Mat4.translation([8,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.m2);
+      //moon 2
+      model_transform = model_transform.post_multiply(Mat4.rotation(t/3.5, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([1.5,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.scale([.5,.5,.5]));
+      this.shapes.ball_1.draw(context,program_state,model_transform,this.materials.moonBoi);
       //third planet -- earth! 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/2, [0,1,0]));
@@ -257,11 +289,7 @@ class Solar_System extends Scene
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_5.draw(context,program_state,model_transform,this.materials.brickBoiBetter);
 
-      for(let i = 0; i < this.star_matrices.length; i++){
-        model_transform = this.star_matrices[i].copy();
-        this.shapes.star.draw(context,program_state,model_transform,this.materials.starBoi);
-
-      }
+    
       
       // ***** END TEST SCENE *****
 
@@ -339,7 +367,10 @@ class Planar_Star extends Shape
 
                                       // TODO (#5a):  Fill in some reasonable texture coordinates for the star:
        //star shit???? texture??? MAPPING OF STAR TEXTURES
-       this.arrays.texture_coord = this.arrays.position.map( p => [Vec.of(0,0),Vec.of(0,1),Vec.of(1,0),Vec.of(1,1)]);
+       this.arrays.texture_coord = this.arrays.position.map( () => Vec.cast(
+            [-7,-7],[-7,7],[7,7],
+            [-7,-7]
+       ));
     }
 }
 
@@ -359,10 +390,9 @@ class Gouraud_Shader extends defs.Phong_Shader
                           // variable will pull its value from the weighted average of the varying's value
                           // from the three vertices of its triangle, weighted according to how close the 
                           // fragment is to each extreme corner point (vertex).
+                          return '';
 
-      return `
-
-      ` ;
+      
     }
   vertex_glsl_code()           // ********* VERTEX SHADER *********
     { 
@@ -377,12 +407,9 @@ class Gouraud_Shader extends defs.Phong_Shader
                                           // within the vertex shader (because it is a special variable for final
                                           // fragment shader color), but you can assign to varyings that will be 
                                           // sent as outputs to the fragment shader.
+                                          return '';
 
-      return this.shared_glsl_code() + `
-        void main()
-          {
-             
-          } ` ;
+   
     }
   fragment_glsl_code()         // ********* FRAGMENT SHADER ********* 
     {                          // A fragment is a pixel that's overlapped by the current triangle.
@@ -393,7 +420,7 @@ class Gouraud_Shader extends defs.Phong_Shader
       return this.shared_glsl_code() + `
         void main()
           {
-                        
+                       
           } ` ;
     }
 }
