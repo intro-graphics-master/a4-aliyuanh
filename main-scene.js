@@ -33,7 +33,7 @@ class Solar_System extends Scene
                                                         // TODO (#1d): Modify one sphere shape's existing texture 
                                                         // coordinates in place.  Multiply them all by 5.
      // this.shapes.ball_repeat.arrays.texture_coord.forEach( coord => coord);
-       this.shapes.ball_5.arrays.texture_coord.forEach(()=>{this.coord = 5*this.coord});
+       this.shapes.ball_5.arrays.texture_coord = this.shapes.ball_5.arrays.texture_coord.map(p=>p.times(5.0));
                                                       // *** Shaders ***
 
                                                               // NOTE: The 2 in each shader argument refers to the max
@@ -68,21 +68,20 @@ class Solar_System extends Scene
                                       ambient: 0, diffusivity: 1, specularity: 1, color: Color.of( .4,.4,.4,1 ) } ),
                       black_hole: new Material( black_hole_shader ),
                              sun_mat: new Material( phong_shader,
-                                    { ambient: 1, diffusivity: 1, specularity: 1, color: Color.of( 0,0,0,1 ) } ),
+                                    { ambient: 1, diffusivity: 1, specularity: .8, color: Color.of( 0,0,0,1 ) } ),
                              rock: new Material( phong_shader,
-                                    { ambient: 0, diffusivity: .5, specularity: .5, color: Color.of( .3,.3,.3,1 ) } ),
+                                    { ambient: 0, diffusivity: .5, specularity: 1, color: Color.of( .4,.4,.4,1 ) } ),
                              m2: new Material( phong_shader,
-                                    { ambient: 0, diffusivity: .5, specularity: .5, color: Color.of( .2,.2,.2,1 ) } ),
+                                    { ambient: 0, diffusivity: .5, specularity: .5, color: Color.of( .3,.3,.3,1 ) } ),
                    earth: new Material( texture_shader_2,    
                                     { texture: new Texture( "assets/earth.gif" ),
                                       ambient: 0, diffusivity: 1, specularity: .4, color: Color.of( .4,.4,.4,1 ) } ),
-                          brickBoi: new Material(texture_shader, {texture: new Texture( "assets/bricks.png", "NEAREST" ), diffusivity:1,
+                          brickBoi: new Material(texture_shader_2, {texture: new Texture( "assets/bricks.png", "NEAREST" ), diffusivity:1,
                           specularity:1, smoothness: 10}),
                           brickBoiBetter: new Material(texture_shader_2, {texture: new Texture("assets/bricks.png"), diffusivity:1,
                           specularity:1}),
-                          starBoi: new Material(texture_shader_2, {texture: new Texture("assets/star_face.png"), ambient: 1, 
-                            diffusivity:1,
-                           specularity:1, color: Color.of(1,1,1,1)}),
+                          starBoi: new Material(texture_shader_2, {texture: new Texture("assets/earth.gif"), ambient: 1, 
+                            diffusivity:1, specularity:1, color: Color.of(1,1,1,1)}),
                            moonBoi : new Material(phong_shader, {ambient:0,diffusivity:.8, specularity:.5, smoothness:10, color: Color.of(1,1,1,1)}),
 
                        };
@@ -186,39 +185,15 @@ class Solar_System extends Scene
                             // generate a new one that uses the below modifier, replacing the ambient term with a 
                             // new value based on our light switch.                         
       const modifier = this.lights_on ? { ambient: 0.3 } : { ambient: 0.0 };
-
-                                                // TODO (#3d):   Draw the sun using its matrix (crated by you above) and material.
-     
-                                                // TODO (#4d1):  Draw planet 1 orbiting at 5 units radius, revolving AND rotating at 1 radian/sec.
-      
-                                                // TODO (#4d2):  Draw planet 2 orbiting 3 units farther, revolving AND rotating slower.
-      
-                                                // TODO (#6b1):  Draw moon 1 orbiting 2 units away from planet 2, revolving AND rotating.
-      
-                                                // TODO (#4d3):  Draw planet 3 orbiting 3 units farther, revolving AND rotating slower.
-      
-                                                // TODO (#6b2):  Draw moon 2 orbiting 2 units away from planet 3, revolving AND rotating.
-     
-                                                // TODO (#4d4):  Draw planet 4
-      
-                                                // TODO (#4d5):  Draw planet 5
-      
-                                                // TODO (#5a): If the light switch is on, loop through star_matrices and draw 2D stars.
-      
                                                 // TODO (#7b): Give the child scene (camera_teleporter) the *inverted* matrices
                                                 // for each of your objects, mimicking the examples above.  Tweak each
                                                 // matrix a bit so you can see the planet, or maybe appear to be standing
                                                 // on it.  Remember the moons.
       // this.camera_teleporter.cameras.push( Mat4.inverse( 
-
-
-
-
-      // ***** BEGIN TEST SCENE *****               
-                                          // TODO:  Delete (or comment out) the rest of display(), starting here:
-      var camera_location = Mat4.translation([0,3,-30]);
-      camera_location = camera_location.post_multiply(Mat4.rotation(.5, [1,0,0]));
-      program_state.set_camera(camera_location);
+         
+      //var camera_location = Mat4.translation([0,3,-30]);
+      //camera_location = camera_location.post_multiply(Mat4.rotation(.5, [1,0,0]));
+      //program_state.set_camera(camera_location);
       const angle = Math.sin( t );
       const light_position = Mat4.rotation( angle, [ 1,0,0 ] ).times( Vec.of( 0,-1,1,0 ) );
       //TODO: change back lights 
@@ -232,15 +207,16 @@ class Solar_System extends Scene
       this.shapes.ball_6.draw(context,program_state,model_transform,this.materials.sun_mat);
       //first planet
       if(this.lights_on){
-       this.materials.rock =  this.materials.rock.override({ambient:.5});
-       this.materials.m2 =  this.materials.m2.override({ambient:.5});
-       this.materials.earth =  this.materials.earth.override({ambient:.5});
-       this.materials.brickBoi =  this.materials.brickBoi.override({ambient:.5});
-       this.materials.brickBoiBetter =  this.materials.brickBoiBetter.override({ambient:.5});
-       this.materials.moonBoi =  this.materials.moonBoi.override({ambient:.5});
+       this.materials.rock =  this.materials.rock.override({ambient:.7});
+       this.materials.m2 =  this.materials.m2.override({ambient:.7});
+       this.materials.earth =  this.materials.earth.override({ambient:.7});
+       this.materials.brickBoi =  this.materials.brickBoi.override({ambient:.7});
+       this.materials.brickBoiBetter =  this.materials.brickBoiBetter.override({ambient:.7});
+       this.materials.moonBoi =  this.materials.moonBoi.override({ambient:.7});
+       //draw stars 
        for(let i = 0; i < this.star_matrices.length; i++){
               model_transform = this.star_matrices[i].copy();
-              this.shapes.star.draw(context,program_state,model_transform,this.materials.sun_mat);
+              this.shapes.star.draw(context,program_state,model_transform,this.materials.starBoi.override({ambient:1}));
 
             }
       }else{
@@ -255,47 +231,56 @@ class Solar_System extends Scene
       //planet 1!!!!!!!
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.2, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([5,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([8,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.rock);
+       model_transform = model_transform.post_multiply(Mat4.rotation(-t/3, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.rotation(-Math.PI/2,[0,1,0]));
 
+      model_transform = model_transform.post_multiply(Mat4.translation([0,0,-3]));
+
+            this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.plastic);
+
+      this.camera_teleporter.cameras.push( Mat4.inverse( model_transform.copy()));
       //second planet - shiny mirror 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.6, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([8,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([11,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.m2);
+       model_transform = model_transform.post_multiply(Mat4.translation([-2,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.rotation(-Math.PI/2,[0,1,0]));
+      this.camera_teleporter.cameras.push( Mat4.inverse( model_transform.copy()));
      
       //third planet -- earth! 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/2, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([11,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([15,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_4.draw(context,program_state,model_transform,this.materials.earth);
+      model_transform = model_transform.post_multiply(Mat4.rotation(-t/3, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([0,0,2]));
+      this.camera_teleporter.cameras.push( Mat4.inverse( model_transform.copy()));
       //moon 2!!!!!!!!
        model_transform = model_transform.post_multiply(Mat4.rotation(t/3.5, [0,1,0]));
       model_transform = model_transform.post_multiply(Mat4.translation([1.5,0,0]));
       model_transform = model_transform.post_multiply(Mat4.scale([.5,.5,.5]));
       this.shapes.ball_1.draw(context,program_state,model_transform,this.materials.moonBoi);
+      model_transform = model_transform.post_multiply(Mat4.rotation(-t/3, [0,1,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([0,0,3]));
+      this.camera_teleporter.cameras.push( Mat4.inverse( model_transform.copy()));
       //fourth planet - bad brick 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([14,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([18,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_5.draw(context,program_state,model_transform,this.materials.brickBoi);
       //fifth planet - good brick :) 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/4, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([17,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([21,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_5.draw(context,program_state,model_transform,this.materials.brickBoiBetter);
-
-    
-      
-      // ***** END TEST SCENE *****
-
-      // Warning: Get rid of the test scene, or else the camera position and movement will not work.
-     // this.shapes.star.draw(context, program_state, model_transform, this.materials.sun_color);
 
 
     }
@@ -367,12 +352,11 @@ class Planar_Star extends Shape
       this.arrays.normal        = this.arrays.position.map( p => Vec.of( 0,0,-1 ) );
 
                                       // TODO (#5a):  Fill in some reasonable texture coordinates for the star:
-       //star shit???? texture??? MAPPING OF STAR TEXTURES
-       this.arrays.texture_coord = this.arrays.position.map( () => Vec.cast(
-            [-7,-7],[-7,7],[7,7],
-            [-7,-7]
-       ));
+       //star???? texture??? 
+       //p = Vec.of((p.x+7)/14.0,(p.y+7)/14.0)
+      this.arrays.texture_coord = this.arrays.position.map( p=> {return Vec.of((p[0]+7.0)/14.0,(p[1]+7.0)/14.0)} );
     }
+
 }
 
 const Gouraud_Shader = defs.Gouraud_Shader =
@@ -391,7 +375,51 @@ class Gouraud_Shader extends defs.Phong_Shader
                           // variable will pull its value from the weighted average of the varying's value
                           // from the three vertices of its triangle, weighted according to how close the 
                           // fragment is to each extreme corner point (vertex).
-                          return '';
+            return ` precision mediump float;
+        const int N_LIGHTS = ` + this.num_lights + `;
+        uniform float ambient, diffusivity, specularity, smoothness;
+        uniform vec4 light_positions_or_vectors[N_LIGHTS], light_colors[N_LIGHTS];
+        uniform float light_attenuation_factors[N_LIGHTS];
+        uniform vec4 shape_color;
+        uniform vec3 squared_scale, camera_center;
+
+                              // Specifier "varying" means a variable's final value will be passed from the vertex shader
+                              // on to the next phase (fragment shader), then interpolated per-fragment, weighted by the
+                              // pixel fragment's proximity to each of the 3 vertices (barycentric interpolation).
+        varying vec4 color;
+                                             // ***** PHONG SHADING HAPPENS HERE: *****                                       
+        vec3 phong_model_lights( vec3 N, vec3 vertex_worldspace )
+          {                                        // phong_model_lights():  Add up the lights' contributions.
+            vec3 E = normalize( camera_center - vertex_worldspace );
+            vec3 result = vec3( 0.0 );
+            for(int i = 0; i < N_LIGHTS; i++)
+              {
+                            // Lights store homogeneous coords - either a position or vector.  If w is 0, the 
+                            // light will appear directional (uniform direction from all points), and we 
+                            // simply obtain a vector towards the light by directly using the stored value.
+                            // Otherwise if w is 1 it will appear as a point light -- compute the vector to 
+                            // the point light's location from the current surface point.  In either case, 
+                            // fade (attenuate) the light as the vector needed to reach it gets longer.  
+                vec3 surface_to_light_vector = light_positions_or_vectors[i].xyz - 
+                                               light_positions_or_vectors[i].w * vertex_worldspace;                                             
+                float distance_to_light = length( surface_to_light_vector );
+
+                vec3 L = normalize( surface_to_light_vector );
+                vec3 H = normalize( L + E );
+                                                  // Compute the diffuse and specular components from the Phong
+                                                  // Reflection Model, using Blinn's "halfway vector" method:
+                float diffuse  =      max( dot( N, L ), 0.0 );
+                float specular = pow( max( dot( N, H ), 0.0 ), smoothness );
+                float attenuation = 1.0 / (1.0 + light_attenuation_factors[i] * distance_to_light * distance_to_light );
+                
+                
+                vec3 light_contribution = shape_color.xyz * light_colors[i].xyz * diffusivity * diffuse
+                                                          + light_colors[i].xyz * specularity * specular;
+
+                result += attenuation * light_contribution;
+              }
+            return result;
+          } ` ;
 
       
     }
@@ -408,8 +436,28 @@ class Gouraud_Shader extends defs.Phong_Shader
                                           // within the vertex shader (because it is a special variable for final
                                           // fragment shader color), but you can assign to varyings that will be 
                                           // sent as outputs to the fragment shader.
-                                          return '';
+         return this.shared_glsl_code() + `
+        attribute vec3 position, normal;                            // Position is expressed in object coordinates.
+        
+        uniform mat4 model_transform;
+        uniform mat4 projection_camera_model_transform;
 
+        void main()
+          {   
+            vec3 N;
+            vec3 vertex_worldspace;
+                                                                          // The vertex's final resting place (in NDCS):
+            gl_Position = projection_camera_model_transform * vec4( position, 1.0 );
+                                                                              // The final normal vector in screen space.
+            N = normalize( mat3( model_transform ) * normal / squared_scale);
+            
+            vertex_worldspace = ( model_transform * vec4( position, 1.0 ) ).xyz;
+            gl_FragColor = vec4(color);
+                                                                     // Compute the final color with contributions from lights:
+            gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );  
+            
+          } ` ;
+    
    
     }
   fragment_glsl_code()         // ********* FRAGMENT SHADER ********* 
@@ -421,7 +469,7 @@ class Gouraud_Shader extends defs.Phong_Shader
       return this.shared_glsl_code() + `
         void main()
           {
-                       
+            gl_FragColor = color;
           } ` ;
     }
 }
