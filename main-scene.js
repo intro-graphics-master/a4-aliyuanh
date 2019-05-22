@@ -71,7 +71,7 @@ class Solar_System extends Scene
                                     { ambient: 1, diffusivity: 1, specularity: .8, color: Color.of( 0,0,0,1 ) } ),
                              rock: new Material( phong_shader,
                                     { ambient: 0, diffusivity: .5, specularity: 1, color: Color.of( .4,.4,.4,1 ) } ),
-                             m2: new Material( phong_shader,
+                             m2: new Material( gouraud_shader,
                                     { ambient: 0, diffusivity: .5, specularity: .5, color: Color.of( .3,.3,.3,1 ) } ),
                    earth: new Material( texture_shader_2,    
                                     { texture: new Texture( "assets/earth.gif" ),
@@ -80,8 +80,8 @@ class Solar_System extends Scene
                           specularity:1, smoothness: 10}),
                           brickBoiBetter: new Material(texture_shader_2, {texture: new Texture("assets/bricks.png"), diffusivity:1,
                           specularity:1}),
-                          starBoi: new Material(texture_shader_2, {texture: new Texture("assets/earth.gif"), ambient: 1, 
-                            diffusivity:1, specularity:1, color: Color.of(1,1,1,1)}),
+                          starBoi: new Material(texture_shader_2, {texture: new Texture("assets/star_face.png"), ambient: 1, 
+                            diffusivity:1, specularity:1, color: Color.of(0,0,0,1)}),
                            moonBoi : new Material(phong_shader, {ambient:0,diffusivity:.8, specularity:.5, smoothness:10, color: Color.of(1,1,1,1)}),
 
                        };
@@ -231,7 +231,7 @@ class Solar_System extends Scene
       //planet 1!!!!!!!
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.2, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([8,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([6,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.rock);
        model_transform = model_transform.post_multiply(Mat4.rotation(-t/3, [0,1,0]));
@@ -239,23 +239,23 @@ class Solar_System extends Scene
 
       model_transform = model_transform.post_multiply(Mat4.translation([0,0,-3]));
 
-            this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.plastic);
+            //this.shapes.ball_3.draw(context,program_state,model_transform,this.materials.plastic);
 
       this.camera_teleporter.cameras.push( Mat4.inverse( model_transform.copy()));
       //second planet - shiny mirror 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/1.6, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([11,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([9,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_2.draw(context,program_state,model_transform,this.materials.m2);
-       model_transform = model_transform.post_multiply(Mat4.translation([-2,0,0]));
+       model_transform = model_transform.post_multiply(Mat4.translation([-2.5,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(-Math.PI/2,[0,1,0]));
       this.camera_teleporter.cameras.push( Mat4.inverse( model_transform.copy()));
      
       //third planet -- earth! 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/2, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([15,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([14,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_4.draw(context,program_state,model_transform,this.materials.earth);
       model_transform = model_transform.post_multiply(Mat4.rotation(-t/3, [0,1,0]));
@@ -272,13 +272,13 @@ class Solar_System extends Scene
       //fourth planet - bad brick 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([18,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([16,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_5.draw(context,program_state,model_transform,this.materials.brickBoi);
       //fifth planet - good brick :) 
       model_transform = origin_system.copy();
       model_transform = model_transform.post_multiply(Mat4.rotation(t/4, [0,1,0]));
-      model_transform = model_transform.post_multiply(Mat4.translation([21,0,0]));
+      model_transform = model_transform.post_multiply(Mat4.translation([19,0,0]));
       model_transform = model_transform.post_multiply(Mat4.rotation(t/3, [0,1,0]));
       this.shapes.ball_5.draw(context,program_state,model_transform,this.materials.brickBoiBetter);
 
@@ -354,7 +354,7 @@ class Planar_Star extends Shape
                                       // TODO (#5a):  Fill in some reasonable texture coordinates for the star:
        //star???? texture??? 
        //p = Vec.of((p.x+7)/14.0,(p.y+7)/14.0)
-      this.arrays.texture_coord = this.arrays.position.map( p=> {return Vec.of((p[0]+7.0)/14.0,(p[1]+7.0)/14.0)} );
+      this.arrays.texture_coord = this.arrays.position.map( p=> Vec.of((p[0]+7.0)/14.0,(p[1]+7.0)/14.0) );
     }
 
 }
@@ -375,7 +375,7 @@ class Gouraud_Shader extends defs.Phong_Shader
                           // variable will pull its value from the weighted average of the varying's value
                           // from the three vertices of its triangle, weighted according to how close the 
                           // fragment is to each extreme corner point (vertex).
-            return ` precision mediump float;
+             return ` precision mediump float;
         const int N_LIGHTS = ` + this.num_lights + `;
         uniform float ambient, diffusivity, specularity, smoothness;
         uniform vec4 light_positions_or_vectors[N_LIGHTS], light_colors[N_LIGHTS];
@@ -420,7 +420,6 @@ class Gouraud_Shader extends defs.Phong_Shader
               }
             return result;
           } ` ;
-
       
     }
   vertex_glsl_code()           // ********* VERTEX SHADER *********
@@ -436,29 +435,26 @@ class Gouraud_Shader extends defs.Phong_Shader
                                           // within the vertex shader (because it is a special variable for final
                                           // fragment shader color), but you can assign to varyings that will be 
                                           // sent as outputs to the fragment shader.
-         return this.shared_glsl_code() + `
+        return this.shared_glsl_code() + `
         attribute vec3 position, normal;                            // Position is expressed in object coordinates.
         
         uniform mat4 model_transform;
         uniform mat4 projection_camera_model_transform;
 
         void main()
-          {   
-            vec3 N;
-            vec3 vertex_worldspace;
-                                                                          // The vertex's final resting place (in NDCS):
+          {               
+            vec3 N, vertex_worldspace;
+                                                              // The vertex's final resting place (in NDCS):
             gl_Position = projection_camera_model_transform * vec4( position, 1.0 );
                                                                               // The final normal vector in screen space.
             N = normalize( mat3( model_transform ) * normal / squared_scale);
             
             vertex_worldspace = ( model_transform * vec4( position, 1.0 ) ).xyz;
-            gl_FragColor = vec4(color);
+            color = vec4( shape_color.xyz * ambient, shape_color.w );
                                                                      // Compute the final color with contributions from lights:
-            gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );  
-            
+            color.xyz += phong_model_lights( normalize( N ), vertex_worldspace );
           } ` ;
     
-   
     }
   fragment_glsl_code()         // ********* FRAGMENT SHADER ********* 
     {                          // A fragment is a pixel that's overlapped by the current triangle.
